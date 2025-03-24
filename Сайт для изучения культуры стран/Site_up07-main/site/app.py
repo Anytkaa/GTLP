@@ -1,8 +1,15 @@
+import base64
 from flask import Flask, render_template
 import mysql.connector
 from config1 import db_config
 
 app = Flask(__name__)
+
+@app.template_filter('b64encode')
+def b64encode_filter(data):
+    if data is not None:
+        return base64.b64encode(data).decode('utf-8')
+    return None
 
 def get_country_data():
     conn = mysql.connector.connect(**db_config)
@@ -20,8 +27,11 @@ def get_country_data():
     artists = []
     scientists = []
     celebrities = []
+    crafts = []
+    musicalinstruments = []
     dances = []
     literature = []
+    cuisine = []
     landmarks = []
     travelersinfo = []
     facts = []
@@ -83,6 +93,14 @@ def get_country_data():
         """, (country['country_id'],))
         celebrities = cursor.fetchall()
 
+        # Запрос для получения информации о ремеслах
+        cursor.execute("SELECT name, description, photo FROM crafts WHERE country_id = %s", (country['country_id'],))
+        crafts = cursor.fetchall()
+
+        # Запрос для получения информации о музыкальных инструментах
+        cursor.execute("SELECT name, photo, information FROM musicalinstruments WHERE country_id = %s", (country['country_id'],))
+        musicalinstruments = cursor.fetchall()
+        
         # Запрос для получения информации о танцах
         cursor.execute("SELECT name, description, photo FROM dances WHERE country_id = %s", (country['country_id'],))
         dances = cursor.fetchall()
@@ -90,6 +108,10 @@ def get_country_data():
         # Запрос для получения информации о литературе
         cursor.execute("SELECT name, description, photo FROM literature WHERE country_id = %s", (country['country_id'],))
         literature = cursor.fetchall()
+
+         # Запрос для получения информации о национальной кухне
+        cursor.execute("SELECT cuisine_description, ingredients, dish_name, dish_description, dish_photo FROM cuisine WHERE country_id = %s", (country['country_id'],))
+        cuisine = cursor.fetchall()
 
         # Запрос для получения информации о достопримечательностях
         cursor.execute("SELECT name, description, photo FROM landmarks WHERE country_id = %s", (country['country_id'],))
@@ -104,12 +126,12 @@ def get_country_data():
         facts = cursor.fetchall()
 
     conn.close()
-    return country, locations,  flags, coatsofarms, cities, history, historicalFigures, artists, scientists, celebrities, dances, literature, landmarks, travelersinfo, facts
+    return country, locations,  flags, coatsofarms, cities, history, historicalFigures, artists, scientists, celebrities, crafts, musicalinstruments, dances, literature, cuisine, landmarks, travelersinfo, facts
 
 @app.route('/')
 def index():
-    country, locations, flags, coatsofarms, cities, history, historicalFigures, artists, scientists, celebrities, dances, literature, landmarks, travelersinfo, facts = get_country_data()
-    return render_template('шаблон1.html', country=country, locations=locations,flags=flags, coatsofarms=coatsofarms, cities=cities, history=history, historicalFigures=historicalFigures, artists=artists, scientists=scientists, celebrities=celebrities, dances=dances, literature=literature, landmarks=landmarks, travelersinfo=travelersinfo, facts=facts)
+    country, locations, flags, coatsofarms, cities, history, historicalFigures, artists, scientists, celebrities, crafts, musicalinstruments, dances, literature, cuisine, landmarks, travelersinfo, facts = get_country_data()
+    return render_template('шаблон1.html', country=country, locations=locations,flags=flags, coatsofarms=coatsofarms, cities=cities, history=history, historicalFigures=historicalFigures, artists=artists, scientists=scientists, celebrities=celebrities, crafts=crafts, musicalinstruments=musicalinstruments, dances=dances, literature=literature, landmarks=landmarks, cuisine=cuisine, travelersinfo=travelersinfo, facts=facts)
 
 if __name__ == '__main__':
     app.run(debug=True)
