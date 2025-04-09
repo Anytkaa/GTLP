@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Исследователь стран мира</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            width: 100%;
+            height: 100vh;
+        }
+        header {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Исследователь стран мира</h1>
+        <p>Нажмите на маркер страны, чтобы узнать больше о её культуре</p>
+    </header>
+    <div id="map"></div>
+
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=ваш_api_ключ&lang=ru_RU"></script>
+    <script>
+        ymaps.ready(initMap);
+        
+        function initMap() {
+            const map = new ymaps.Map('map', {
+                center: [20, 0],
+                zoom: 3,
+                controls: ['zoomControl']
+            });
+    
+            // Добавление маркеров стран
+            const countries = [
+            { 
+                    coords: [39.9334, 32.8597], // Турция
+                    link: '/view/4',
+                    icon: '/static/images/turk.png',
+                    name: 'Турция'
+                },
+                { 
+                    coords: [51.5074, -3.1278], // Великобритания
+                    link: '/view/7',
+                    icon: '/static/images/uk.png',
+                    name: 'Великобритания'
+                },
+                { 
+                    coords: [37.7749, -122.4194], // США
+                    link: '/view/3',
+                    icon: '/static/images/usa.png',
+                    name: 'США'
+                },
+                { 
+                    coords: [46.8566, 2.3522], // Франция
+                    link: '/view/2',
+                    icon: '/static/images/france.png',
+                    name: 'Франция'
+                },
+                { 
+                    coords: [30.033333, 31.233334], // Египет
+                    link: '/egypt',
+                    icon: '/static/images/egypt.png',
+                    name: 'Египет'
+                },
+                { 
+                    coords: [55.7558, 37.6173], // Россия
+                    link: '/view/9',
+                    icon: '/static/images/russia.png',
+                    name: 'Россия'
+                },
+                { 
+                    coords: [39.9042, 116.4074], // Китай
+                    link: '/view/6',
+                    icon: '/static/images/china.png',
+                    name: 'Китай'
+                },
+                { 
+                    coords: [35.6895, 139.6917], // Япония
+                    link: '/view/5',
+                    icon: '/static/images/japan.png',
+                    name: 'Япония'
+                },
+                { 
+                    coords: [40.416775, -3.703790], // Испания
+                    link: '/view/10',
+                    icon: '/static/images/spain.png',
+                    name: 'Испания'
+                },
+                { 
+                    coords: [25.2048, 55.2708], // ОАЭ
+                    link: '/view/11',
+                    icon: '/static/images/uae.png',
+                    name: 'ОАЭ'
+                },
+                { 
+                    coords: [28.6139, 77.2090], // Индия
+                    link: '/view/12',
+                    icon: '/static/images/india.png',
+                    name: 'Индия'
+                },
+                { 
+                    coords: [19.4326, -99.1332], // Мексика
+                    link: '/view/13',
+                    icon: '/static/images/mexico.png',
+                    name: 'Мексика'
+                },
+                { 
+                    coords: [-33.8688, 151.2093], // Австралия
+                    link: '/view/14',
+                    icon: '/static/images/australia.png',
+                    name: 'Австралия'
+                },
+                { 
+                    coords: [-15.7975, -47.8919], // Бразилия
+                    link: '/view/8',
+                    icon: '/static/images/brazil.png',
+                    name: 'Бразилия'
+                }
+            ];
+    
+            countries.forEach(country => {
+                const placemark = new ymaps.Placemark(
+                    country.coords,
+                    {
+                        hintContent: country.name
+                    },
+                    {
+                        iconLayout: 'default#image',
+                        iconImageHref: country.icon,
+                        iconImageSize: [40, 40],
+                        iconImageOffset: [-20, -20]
+                    }
+                );
+                
+                // Обработчик клика - сразу переход на страницу
+                placemark.events.add('click', function() {
+                    window.location.href = country.link;
+                });
+                
+                map.geoObjects.add(placemark);
+            });
+        }
+    </script>
+</body>
+</html>
