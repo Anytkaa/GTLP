@@ -1,8 +1,28 @@
 from flask import Flask, render_template, redirect, url_for
 import mysql.connector
 from config1 import db_config
+# Добавьте эту функцию в app.py для автоматической конвертации
+from PIL import Image
+import os
+
+def convert_to_webp(source_path, quality=85):
+    destination_path = os.path.splitext(source_path)[0] + '.webp'
+    image = Image.open(source_path)
+    image.save(destination_path, 'webp', quality=quality)
+    return destination_path
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
+
+from flask import send_from_directory
+import os
+
+@app.route('/optimized_images/<path:filename>')
+def optimized_image(filename):
+    # Проверяем есть ли webp версия
+    webp_path = os.path.splitext(filename)[0] + '.webp'
+    if os.path.exists(os.path.join('static/optimized_images', webp_path)):
+        return send_from_directory('static/optimized_images', webp_path)
+    return send_from_directory('static/optimized_images', filename)
 
 @app.template_filter('b64encode')
 def b64encode_filter():
@@ -159,4 +179,4 @@ def brazil():
     return country_page('Бразилия')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=8080)
